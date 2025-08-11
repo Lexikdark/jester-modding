@@ -364,8 +364,9 @@ function Phases.CallOutContactGroup(task, contact_group, is_first_callout)
 	local range = lead_contact.scan_range:ConvertTo(NM)
 	local altitude = Api.GetAltitudeFromSlantRange(lead_contact.scan_range)
 
+	local is_enough_time_after_takeoff = GetJester().memory:GetTimeSinceOnGround() >= Config.TIME_AFTER_TAKEOFF_START_CALLOUTS
 	-- Ignore super close friendlies, also to avoid calling out own group when flying with buddies
-	local is_close_friendly = is_friendly and range < NM(5)
+	local is_close_friendly = is_friendly and range < Config.DONT_CALLOUT_FRIENDLY_CLOSER_THAN
 
 	Log("Processed targets (" .. tostring(#contact_group) .. "), lead: " .. tostring(lead_contact.id))
 	for _, target in ipairs(contact_group) do
@@ -380,7 +381,7 @@ function Phases.CallOutContactGroup(task, contact_group, is_first_callout)
 		else
 			task:Say("contacts_iff/negativeiff")
 		end
-	elseif not is_close_friendly then
+	elseif is_enough_time_after_takeoff and not is_close_friendly then
 		-- TODO It is unrealistic for Jester to make such precise callouts (requiring sin/cos math), IRL they estimated it. Should add some randomness and less precision.
 		if lead_contact.cheat_altitude:ConvertTo(ft) > ft(40000) then
 			task:Say(BraCalls.IntroduceContactPhrase(lead_contact.identification, #contact_group, not is_first_callout),

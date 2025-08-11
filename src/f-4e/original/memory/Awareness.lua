@@ -104,8 +104,10 @@ function Awareness:DetectLandingQuality()
 
 	--If an oleo rate is above some number, it's not a very smooth landing experience, lets timestamp it and we can use
 	--it in our quality behaviour commentary.
-	if oleo_rate_front > harsh_landing_rate_front or oleo_rate_left > harsh_landing_rate or oleo_rate_right > harsh_landing_rate then
-		self:AddOrUpdateObservation("last_significant_oleo_rate_time", Utilities.GetTime().mission_time)
+	if oleo_rate_front and oleo_rate_left and oleo_rate_right then
+		if oleo_rate_front > harsh_landing_rate_front or oleo_rate_left > harsh_landing_rate or oleo_rate_right > harsh_landing_rate then
+			self:AddOrUpdateObservation("last_significant_oleo_rate_time", Utilities.GetTime().mission_time)
+		end
 	end
 
 	--We have a hard landing timeout; to avoid triggering it several times on a bouncy landing.

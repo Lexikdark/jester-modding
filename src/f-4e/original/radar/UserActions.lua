@@ -337,7 +337,7 @@ ListenTo("radar_context_a2a_double", "RadarUserActions", function(task)
 	UserActions.HandleA2AContextAction(task, Config.context_action_type.DOUBLE)
 end)
 
-ListenTo("radar_iff", "RadarUserActions", function(task)
+ListenTo("radar_iff", "RadarUserActions", function(task, system)
 	State.SetEventTask(task)
 	if not State.is_active or not Api.IsPowered() then
 		task:CantDo()
@@ -346,7 +346,12 @@ ListenTo("radar_iff", "RadarUserActions", function(task)
 
 	task:Say("contacts_iff/checkingiff")
 	    :Require({ voice = true, hands = true })
-	Api.ClickIffButton(task)
+
+	if system == "both" then
+		Api.ClickIffButton(task)
+	else
+		Api.ClickApx76IffOnly(task)
+	end
 end)
 
 ListenTo("radar_display_range", "RadarUserActions", function(task, range_and_scan_type)

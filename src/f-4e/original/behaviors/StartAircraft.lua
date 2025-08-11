@@ -151,6 +151,12 @@ function StartAircraft:Constructor()
 				GetJester():AddTask(task)
 				tasks[#tasks + 1] = task
 			end
+
+			task = Task:new():Click("Combat-Tree Mode 2", "positive")
+					:Click("Combat-Tree Mode 3", "positive")
+			GetJester():AddTask(task)
+			tasks[#tasks + 1] = task
+
 			startup_in_progress = false
 			GetJester().memory:SetFullAlignment(false)
 			GetJester().memory:SetBathAlignment(false)
@@ -173,6 +179,12 @@ function StartAircraft:Constructor()
 				GetJester():AddTask(task)
 				tasks[#tasks + 1] = task
 			end
+
+			task = Task:new():Click("Combat-Tree Mode 2", "positive")
+			           :Click("Combat-Tree Mode 3", "positive")
+			GetJester():AddTask(task)
+			tasks[#tasks + 1] = task
+
 			startup_in_progress = false
 			GetJester().memory:SetFullAlignment(false)
 			GetJester().memory:SetBathAlignment(false)

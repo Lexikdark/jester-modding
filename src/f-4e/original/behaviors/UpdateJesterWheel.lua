@@ -101,6 +101,7 @@ end
 local UpdateTuneAtc = function()
 	local items = {}
 	local i = 1
+	local nearby_airfields = nearby_airfields or {}
 	for _, airfield in ipairs(nearby_airfields) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break
@@ -142,6 +143,7 @@ end
 local UpdateTuneRadioAssets = function()
 	local items = {}
 	local i = 1
+	local radio_tac_objects = radio_tac_objects or {}
 	for _, obj in ipairs(radio_tac_objects) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break
@@ -184,6 +186,7 @@ local GenerateNavToAirfieldsItems = function(action_name, value_prefix, not_exit
 	not_exit_menu = not_exit_menu or false
 	local items = {}
 	local i = 1
+	local nearby_airfields = nearby_airfields or {}
 	for _, airfield in ipairs(nearby_airfields) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break
@@ -227,6 +230,7 @@ local GenerateNavToAssetsItems = function(action_name, value_prefix, not_exit_me
 	not_exit_menu = not_exit_menu or false
 	local items = {}
 	local i = 1
+	local nav_tac_objects = nav_tac_objects or {}
 	for _, obj in ipairs(nav_tac_objects) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break
@@ -270,6 +274,7 @@ local GenerateNavToMapMarkerItems = function(action_name, value_prefix, not_exit
 	not_exit_menu = not_exit_menu or false
 	local items = {}
 	local i = 1
+	local map_markers = map_markers or {}
 	for _, marker in ipairs(map_markers) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break
@@ -444,10 +449,13 @@ function UpdateJesterWheel:UpdateTacanWheelInfo()
 			mode_str = "AA TR"
 		end
 
-		local channel_str = string.format("%03d", channel_prop.value)
-		local band_str = use_y_prop.value and "Y" or "X"
-
-		info = mode_str .. ", " .. channel_str .. band_str
+        if mode_int_prop.value == 0 then
+            info = mode_str  -- Just "OFF"
+        else
+            local channel_str = string.format("%03d", channel_prop.value or 0)
+            local band_str = use_y_prop.value and "Y" or "X"
+            info = mode_str .. ", " .. channel_str .. band_str
+        end
 	end
 
 	Wheel.SetMenuInfo( info, { "Navigation", "TACAN" })
@@ -1177,6 +1185,7 @@ end
 local UpdateTacanGroundChannels = function()
 	local items = {}
 	local i = 1
+	local tacans = tacans or {}
 	for _, tac in ipairs(tacans) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break
@@ -1218,6 +1227,7 @@ end
 local UpdateTacanAssetChannels = function()
 	local items = {}
 	local i = 1
+	local tacans = tacans or {}
 	for _, tac in ipairs(tacans) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break

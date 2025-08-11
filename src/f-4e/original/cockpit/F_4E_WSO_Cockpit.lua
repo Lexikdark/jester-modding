@@ -89,7 +89,7 @@ function F_4E_WSO_Cockpit:AddGauges()
 			{
 				observation_name = 'bus_power',
 				connector = Connector:new('PNT_PITOT_HEAT_SWITCH'),
-				property = GetProperty('/TACAN Power Supply', 'Is Enough Power'),
+				property = GetProperty('/TACAN/Power Supply', 'Is Enough Power'),
 				time_to_read = default_simple_gauge_time_to_read
 			})
 	self:AddGauge("Left Engine Master Switch",
@@ -197,6 +197,15 @@ function F_4E_WSO_Cockpit:AddManipulators()
 	self:AddManipulator("Nav Panel Target Latitude", {component_path = "/Navigation Computer/Navigation Computer ASN 46A Mechanical Panel/Navigation Computer Target Latitude Knob"})
 	self:AddManipulator("Nav Panel Position Latitude", {component_path = "/Navigation Computer/Navigation Computer ASN 46A Mechanical Panel/Navigation Computer Lattitude Set Mechanical System"})
 
+	-- OperationMode: OFF, REC, TR, AA_REC, AA_TR
+	self:AddManipulator("TACAN Function", {component_path = "/WSO Cockpit/WSO Left Console/TACAN Panel/Function Selector Knob"})
+	-- from 0 to 12
+	self:AddManipulator("TACAN Channel Tens", {component_path = "/WSO Cockpit/WSO Left Console/TACAN Panel/Channel Knob Tens"})
+	-- from 0 to 9
+	self:AddManipulator("TACAN Channel Ones", {component_path = "/WSO Cockpit/WSO Left Console/TACAN Panel/Channel Knob Ones"})
+	-- XYMode: X, Y
+	self:AddManipulator("TACAN Band", {component_path = "/WSO Cockpit/WSO Left Console/TACAN Panel/Channel Knob XY"})
+
 	-- SwitchState: NAV_COMP, VOR_TAC, UHF_ADF_TACAN
 	self:AddManipulator("BDHI Mode", {component_path = "/Navigation Mode Selector Switch/Navigation Mode Selector Switch"})
 
@@ -255,6 +264,11 @@ function F_4E_WSO_Cockpit:AddManipulators()
 	self:AddManipulator("Antenna Elevation Knob", {component_path = "/Radar Stick Knobs/Elevation Knob"})
 	-- DefaultSwitchEnum: ON, OFF
 	self:AddManipulator("Antenna Challenge", {component_path = "/Radar Stick Knobs/Challenge Switch"})
+
+	-- DefaultThreePositionSwitchEnum: positive, zero, negative
+	self:AddManipulator("Combat-Tree Mode 2", {component_path = "/IFF Interrogator System/Combat-Tree Mode 2 Switch"})
+	self:AddManipulator("Combat-Tree Mode 3", {component_path = "/IFF Interrogator System/Combat-Tree Mode 3 Switch"})
+	self:AddManipulator("APX-76 Test Challenge", {component_path = "/IFF Interrogator System/Test Challenge Switch"})
 
 	--WSO Instrument Ground Power Switch, DefaultSwitchEnum: ON, OFF
 	self:AddManipulator("WSO Ground Power Switch", {component_path = "/WSO Cockpit/CB Panel 2/Instrument Ground Power Switch"})

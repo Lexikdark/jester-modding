@@ -85,15 +85,55 @@ end
 local Interactions = { _G = _G }
 setmetatable(Interactions, {__index = _G} )
 
-local function RequireOrAlternateInteractionsTable(module, table)
-	local function require_(mod)
-		setfenv(1, Interactions)
-		require(mod)
+local RequireOrAlternateInteractionsTable = nil
+
+if pcalls_disabled then
+	local function searchpath(modname, path)
+		-- turn dots into directory separators
+		local fname = modname:gsub("%.", "/")
+		-- collect errors for debugging
+		local errs = {}
+		for template in path:gmatch("[^;]+") do
+			local filename = template:gsub("?", fname)
+			local f = io.open(filename, "r")
+			if f then
+				f:close()
+				return filename           -- found!
+			else
+				errs[#errs+1] = "\n\tno file '"..filename.."'"
+			end
+		end
+		return nil, table.concat(errs)
 	end
-	res = pcall(require_, module)
-	if not(res) then
-		Interactions[table] = {}
-		setmetatable(Interactions[table], {__index = function(_, _) return 0 end})
+
+	RequireOrAlternateInteractionsTable = function(modname, tablename)
+		local filepath = searchpath(modname, package.path)
+				or (package.preload[modname] and modname)  -- allow preload
+		if not filepath then
+			-- module truly not there → fallback table
+			local t = {}
+			setmetatable(t, { __index = function() return 0 end })
+			Interactions[tablename] = t
+			return
+		end
+
+		-- safe to require: inject into Interactions and restore env
+		local oldenv = getfenv(1)
+		setfenv(1, Interactions)
+		require(modname)
+		setfenv(1, oldenv)
+	end
+else
+	RequireOrAlternateInteractionsTable = function(module, table)
+		local function require_(mod)
+			setfenv(1, Interactions)
+			require(mod)
+		end
+		res = pcall(require_, module)
+		if not(res) then
+			Interactions[table] = {}
+			setmetatable(Interactions[table], {__index = function(_, _) return 0 end})
+		end
 	end
 end
 

@@ -9,7 +9,8 @@ local StressReaction = require('base.StressReaction')
 local SayTask = require('tasks.common.SayTask')
 
 local ObserveCockpitPressureIndicator = Class(Behavior)
-ObserveCockpitPressureIndicator.pressure_loss_detected = false;
+ObserveCockpitPressureIndicator.wrong_pressure_duration = min(0);
+ObserveCockpitPressureIndicator.pressure_loss_identified = false;
 
 local default_interval = min(0.5)
 
@@ -21,7 +22,7 @@ function GetCockpitPressure()
 	return GetJester().awareness:GetObservation("cockpit_pressure") -- indicator shows from 0 to 50k ft
 end
 
-function ObserveCockpitPressureIndicator:IsCockpitPressureLost()
+function ObserveCockpitPressureIndicator:IsCockpitPressureWrong()
 	if self.altitude < ft(23100) then
 		-- cockpit pressure should be 8000ft
 		return self.cockpit_pressure > ft(10000)
@@ -38,15 +39,21 @@ function ObserveCockpitPressureIndicator:Constructor()
 		self.altitude = GetAltitude()
 		self.cockpit_pressure = GetCockpitPressure()
 
-		local is_cockpit_pressure_lost = self:IsCockpitPressureLost()
+        if self:IsCockpitPressureWrong() then
+            self.wrong_pressure_duration = self.wrong_pressure_duration + default_interval
+        else
+            self.wrong_pressure_duration = min(0)
+        end
 
-		if (is_cockpit_pressure_lost and not self.pressure_loss_detected) then
-			self.pressure_loss_detected = true
+		local pressure_loss = self.wrong_pressure_duration >= min(2)
+
+		if (pressure_loss and not self.pressure_loss_identified) then
+			self.pressure_loss_identified = true
 			local task = SayTask:new('phrases/WeveLostCabinPressure')
 			GetJester():AddTask(task)
 			return { task }
-		elseif (not is_cockpit_pressure_lost and self.pressure_loss_detected) then
-			self.pressure_loss_detected = false
+		elseif (not pressure_loss and self.pressure_loss_identified) then
+			self.pressure_loss_identified = false
 		end
 	end
 

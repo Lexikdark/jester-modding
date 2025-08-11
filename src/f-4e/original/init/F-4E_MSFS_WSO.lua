@@ -7,7 +7,7 @@ local Dogfight = require 'situations.NFO.Dogfight'
 local StayAirborne = require 'intentions.StayAirborne'
 local HighAltitudeFlight = require 'situations.HighAltitudeFlight'
 --local TakeoffRoll = require 'situations.TakeoffRoll'
-local Flight = require 'situations.Flight'
+local FlightMSFS = require 'situations.FlightMSFS'
 local FuelDumping = require 'situations.FuelDumping'
 local AAR = require 'situations.AAR'
 local Bombing = require 'situations.Bombing'
@@ -24,10 +24,11 @@ local PowerOnAndOnGround = require 'situations.PowerOnAndOnGround'
 local PostTakeoff = require 'situations.PostTakeoff'
 local AlignmentRestart = require 'situations.AlignmentReset'
 local EngineMasterSwitchesOn = require 'situations.EngineMasterSwitchesOn'
+local DoAlways = require 'situations.DoAlways'
 
 F_4E_WSO_Jester = Class(Jester)
 
-function CreateF4E_WSOJester ( )
+function CreateF4EMSFSWSOJester ( )
     local wso = F_4E_WSO_Jester:new()
     local Task = require 'base.Task'
     local Action = require 'base.Action'
@@ -43,29 +44,30 @@ function CreateF4E_WSOJester ( )
     --test_say_task:AddAction(SayAction('phrases/PigsInSpace'))
     --wso:AddTask(test_say_task)
     wso:AddIntentions(StayAirborne:new())
-    wso:AddSituations(Dogfight:new())
+--     wso:AddSituations(Dogfight:new())
     wso:AddSituations(HighAltitudeFlight:new())
-    wso:AddSituations(Flight:new())
+    wso:AddSituations(FlightMSFS:new())
     wso:AddSituations(FuelDumping:new())
-    wso:AddSituations(AAR:new())
-    wso:AddSituations(Bombing:new())
+--     wso:AddSituations(AAR:new())
+--     wso:AddSituations(Bombing:new())
     wso:AddSituations(InAircraft:new())
     wso:AddSituations(Landing:new())
     wso:AddSituations(TakeOff:new())
-    wso:AddSituations(Taxiing:new())
-    wso:AddSituations(StartUp:new())
-    wso:AddSituations(CloseCanopy:new())
-    wso:AddSituations(GroundPowerConnected:new())
-    wso:AddSituations(AircraftCold:new())
-    wso:AddSituations(PowerOnAndOnGround:new())
-    wso:AddSituations(PostTakeoff:new())
-    wso:AddSituations(AlignmentRestart:new())
-    wso:AddSituations(EngineMasterSwitchesOn:new())
+--     wso:AddSituations(Taxiing:new())
+--     wso:AddSituations(StartUp:new())
+--     wso:AddSituations(CloseCanopy:new())
+--     wso:AddSituations(GroundPowerConnected:new())
+--     wso:AddSituations(AircraftCold:new())
+--     wso:AddSituations(PowerOnAndOnGround:new())
+--     wso:AddSituations(PostTakeoff:new())
+--     wso:AddSituations(AlignmentRestart:new())
+--     wso:AddSituations(EngineMasterSwitchesOn:new())
+    wso:AddSituations(DoAlways:new())
     --wso:AddSituation(OnFinal:new())
 
-    -- Loading user mods who registered a callback at mod_bootstrap
-    for _, mod_init in pairs(mod_bootstrap) do
-        mod_init(wso)
+    -- Loading user mods who registered a callback at mod_init
+    for _, callback in pairs(mod_init) do
+        callback(wso)
     end
 
     --
@@ -86,4 +88,4 @@ function CreateF4E_WSOJester ( )
     return wso
 end
 
-RegisterJesterFactory( "F-4E WSO", CreateF4E_WSOJester )
+RegisterJesterFactory( "F-4E MSFS WSO", CreateF4EMSFSWSOJester )

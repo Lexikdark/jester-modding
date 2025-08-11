@@ -65,11 +65,11 @@ function StayinAlive:MonitorEjection()
 
 	local jester = GetJester()
 	local velocity_vector = jester.awareness:GetObservation("gods_velocity_ned")
-	local vertical_velocity = velocity_vector.z or mps(0)
+	local vertical_velocity = (velocity_vector and velocity_vector.z) or mps(0)
 	local g_force = jester.awareness:GetObservation("g_force")
 	local aoa = jester.awareness:GetObservation("angle_of_attack") or deg(0)
 	local angular_velocity = jester.awareness:GetObservation("gods_angular_velocity_body")
-	local angular_rate = angular_velocity.z or deg(0) / s(1)
+	local angular_rate = (angular_velocity and angular_velocity.z) or deg(0) / s(1)
 	local inverted = jester.awareness:GetObservation("is_inverted") or false
 
 	--local were_damaged = jester.memory:GetWeAreDamaged()

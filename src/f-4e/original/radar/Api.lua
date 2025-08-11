@@ -132,6 +132,11 @@ function Api.ClickIffButton(task)
 	return task:ClickShort("Antenna Challenge", "ON")
 end
 
+function Api.ClickApx76IffOnly(task)
+	State.last_iff_timestamp = Utilities.GetTime().mission_time
+	return task:ClickShort("APX-76 Test Challenge", "negative")
+end
+
 function Api.GetTargetIdentification(target_id)
 	local identification = RadarTargetIdentification.UNKNOWN
 

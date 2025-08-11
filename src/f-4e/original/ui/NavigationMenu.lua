@@ -7,52 +7,23 @@ local UpdateJesterWheel = require('behaviors.UpdateJesterWheel')
 local Waypoint = require 'base.Waypoint'
 
 local tacan_function = {
-	off = 1,
-	r = 2,
-	tr = 3,
-	aar = 4,
-	aatr = 5,
-}
-
-local tacan_tens = {
-	["00"] = 1,
-	["01"] = 2,
-	["02"] = 3,
-	["03"] = 4,
-	["04"] = 5,
-	["05"] = 6,
-	["06"] = 7,
-	["07"] = 8,
-	["08"] = 9,
-	["09"] = 10,
-	["10"] = 11,
-	["11"] = 12,
-	["12"] = 13,
-}
-
-local tacan_ones = {
-	["0"] = 1,
-	["1"] = 2,
-	["2"] = 3,
-	["3"] = 4,
-	["4"] = 5,
-	["5"] = 6,
-	["6"] = 7,
-	["7"] = 8,
-	["8"] = 9,
-	["9"] = 10,
+	off = "OFF",
+	r = "REC",
+	tr = "TR",
+	aar = "AA_REC",
+	aatr = "AA_TR",
 }
 
 local tacan_band = {
-	x = 1,
-	y = 2,
+	x = "X",
+	y = "Y",
 }
 
 local ToggleTacanCommand = function()
 	ClickRawButton(Interactions.devices.TACAN_AN_ARN_118, Interactions.device_commands.TACAN_RIO_COMMAND)
 end
 
-local SetTacanChannel = function(channel_text)
+local SetTacanChannel = function(task, channel_text)
 	-- e.g. 107x or 068x
 	local tens = channel_text:sub(1, 2) -- 10 or 06
 	local ones = channel_text:sub(3, 3) -- 7 or 8
@@ -66,15 +37,14 @@ local SetTacanChannel = function(channel_text)
 	local isBandCorrect = band == "x" or band == "y"
 
 	if isNumTens and isNumOnes and isBandCorrect then
-		ClickRawKnob(Interactions.devices.TACAN_AN_ARN_118, Interactions.device_commands.RIO_TACAN_CHAN_TensAndMore, tacan_tens[tens], 13)
-		ClickRawKnob(Interactions.devices.TACAN_AN_ARN_118, Interactions.device_commands.RIO_TACAN_CHAN_Ones, tacan_ones[ones], 10)
-		ClickRawKnob(Interactions.devices.TACAN_AN_ARN_118, Interactions.device_commands.RIO_TACAN_CHAN_XY, tacan_band[band], 2)
+        task:Click("TACAN Channel Tens", tens)
+        task:Click("TACAN Channel Ones", ones)
+        task:Click("TACAN Band", tacan_band[band])
 	end
 end
 
-local SetTacanMode = function(mode)
-	local pos = tacan_function[mode]
-	ClickRawKnob(Interactions.devices.TACAN_AN_ARN_118, Interactions.device_commands.RIO_TACAN_Function_Selector, pos, 5)
+local SetTacanMode = function(task, mode)
+	task:Click("TACAN Function", tacan_function[mode])
 end
 
 local UpdateTACANWheelInfo = function()
@@ -132,8 +102,9 @@ ListenTo("nav_tgt", "NavigationMenu", function(task, tgt_mode)
 end)
 
 ListenTo("nav_tacan_mode", "NavigationMenu", function(task, mode)
-	task:Roger():Then(function()
-		SetTacanMode(mode)
+	task:Roger()
+	SetTacanMode(task, mode)
+	task:Then(function()
 		UpdateTACANWheelInfo()
 	end)
 end)
@@ -185,8 +156,9 @@ ListenTo("nav_tacan_chan_ones", "NavigationMenu", function(task, channel)
 end)
 
 ListenTo("nav_tacan_chan_band", "NavigationMenu", function(task, channelWithBand)
-	task:Roger():Then(function()
-		SetTacanChannel(channelWithBand)
+	task:Roger()
+	SetTacanChannel(task, channelWithBand)
+	task:Then(function()
 		UpdateTACANWheelInfo()
 	end)
 	local update_wheel_behaviour = GetJester().behaviors[UpdateJesterWheel]
@@ -196,31 +168,33 @@ ListenTo("nav_tacan_chan_band", "NavigationMenu", function(task, channelWithBand
 end)
 
 ListenTo("nav_tacan_chan_proxy", "NavigationMenu", function(task, channelWithBand)
+	SetTacanChannel(task, channelWithBand)
 	task:Then(function()
-		SetTacanChannel(channelWithBand)
 		UpdateTACANWheelInfo()
 	end)
 end)
 
 ListenTo("nav_tacan_mode_proxy", "NavigationMenu", function(task, mode)
+	SetTacanMode(task, mode)
 	task:Then(function()
-		SetTacanMode(mode)
 		UpdateTACANWheelInfo()
 	end)
 end)
 
 ListenTo("nav_tacan_tr", "NavigationMenu", function(task, channel)
-	task:Roger():Then(function()
-		SetTacanMode("tr")
-		SetTacanChannel(channel)
+	task:Roger()
+	SetTacanMode(task, "tr")
+	SetTacanChannel(task, channel)
+	task:Then(function()
 		UpdateTACANWheelInfo()
 	end)
 end)
 
 ListenTo("nav_tacan_aa", "NavigationMenu", function(task, channel)
-	task:Roger():Then(function()
-		SetTacanMode("aatr")
-		SetTacanChannel(channel)
+	task:Roger()
+	SetTacanMode(task, "aatr")
+    SetTacanChannel(task,channel)
+	task:Then(function()
 		UpdateTACANWheelInfo()
 	end)
 end)

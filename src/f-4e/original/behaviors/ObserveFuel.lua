@@ -57,12 +57,12 @@ function ObserveFuel:Constructor()
 
 		if closest_tanker then
 			local dist_to_tanker = closest_tanker.polar_ned.length:ConvertTo(NM)
-			if dist_to_tanker < NM(5) then
+			if dist_to_tanker < NM(7) then
 				return tasks
 			end
 		end
 
-		if distance_to_closest_friendly_airfield < NM(3) then
+		if distance_to_closest_friendly_airfield < NM(7) then
 			return tasks
 		end
 

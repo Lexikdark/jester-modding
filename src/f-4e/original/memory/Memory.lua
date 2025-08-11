@@ -64,6 +64,7 @@ function Memory:LoadFlightplans()
 	self.flightplan_1.waypoints = {}
 	local waypoint_index = 1
 
+	local flightplan_1_init = flightplan_1_init or {}
 	for _, waypoint in ipairs(flightplan_1_init) do
 		local lat = waypoint.latitude.value
 		local lon = waypoint.longitude.value
