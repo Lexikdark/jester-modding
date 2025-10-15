@@ -12,8 +12,9 @@ local reporting_damage_min_interval = s(60)
 
 local critical_cells = {55, --tail
                         35, --Left wing in
-                        36 --Right wing in
-    }
+                        36, --Right wing in
+                        999 --Universal Jester heavy damage cell
+                        }
 
 function ReportDamage:Constructor()
     Behavior.Constructor(self)

@@ -23,7 +23,8 @@ ObserveFuel.knows_out_of_fuel = false
 
 function GetTotalFuelQuantity()
 	-- max internal fuel 12,150 lbs
-	local gauge_readout = GetProperty(fuel_gauge, 'Internal Fuel Quantity').value
+	local prop = GetProperty(fuel_gauge, 'Internal Fuel Quantity')
+	local gauge_readout = prop and prop.value or nil
 	if gauge_readout then
 		return gauge_readout
 	else
@@ -52,12 +53,13 @@ function ObserveFuel:Constructor()
 		end
 
 		--Inhibit when in combat or near a friendly tanker.
-		local closest_tanker = GetJester().awareness:GetClosestFriendlyTanker() or false
-		local distance_to_closest_friendly_airfield = GetJester().awareness:GetDistanceToClosestFriendlyAirfield()
+		local awareness = GetJester() and GetJester().awareness or nil
+		local closest_tanker = awareness and awareness:GetClosestFriendlyTanker() or false
+		local distance_to_closest_friendly_airfield = awareness:GetDistanceToClosestFriendlyAirfield()
 
-		if closest_tanker then
+		if closest_tanker and closest_tanker.polar_ned and closest_tanker.polar_ned.length then
 			local dist_to_tanker = closest_tanker.polar_ned.length:ConvertTo(NM)
-			if dist_to_tanker < NM(7) then
+			if dist_to_tanker and dist_to_tanker < NM(7) then
 				return tasks
 			end
 		end

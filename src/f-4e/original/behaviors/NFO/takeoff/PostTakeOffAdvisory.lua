@@ -17,10 +17,10 @@
 local Class = require('base.Class')
 local Behavior = require('base.Behavior')
 local SayTask = require('tasks.common.SayTask')
+local SayTaskWithDelay = require ('tasks.common.SayTaskWithDelay')
 local Utilities = require ('base.Utilities')
 local Memory = require('memory.Memory')
 local Timer = require 'base.Timer'
-local SayTaskWithDelay = require ('tasks.common.SayTaskWithDelay')
 
 local PostTakeOffAdvisory = Class(Behavior)
 
@@ -60,9 +60,9 @@ end
 function PostTakeOffAdvisory:RemindGearStillDown()
 
 	if not has_said_gear_still_down and not has_said_gear_up then
-		local gear_indicator_1 = GetJester().awareness:GetObservation("left_gear_indicator")
-		local gear_indicator_2 = GetJester().awareness:GetObservation("right_gear_indicator")
-		local gear_indicator_3 = GetJester().awareness:GetObservation("nose_gear_indicator")
+		local gear_indicator_1 = GetJester().awareness:GetObservation("left_gear_indicator") or 0.0
+		local gear_indicator_2 = GetJester().awareness:GetObservation("right_gear_indicator") or 0.0
+		local gear_indicator_3 = GetJester().awareness:GetObservation("nose_gear_indicator") or 0.0
 
 		if gear_indicator_1 < gear_up_threshold and gear_indicator_2 < gear_up_threshold and gear_indicator_3 < gear_up_threshold then
 			return
@@ -78,7 +78,7 @@ end
 function PostTakeOffAdvisory:RemindFlapsStillDown()
 	if not has_said_flaps_still_down and not has_said_flaps_up then
 
-		local flaps_indicator = GetJester().awareness:GetObservation("flaps_indicator") or false
+		local flaps_indicator = GetJester().awareness:GetObservation("flaps_indicator") or u(0.0)
 
 		if flaps_indicator.value < flaps_up_threshold then
 			return
@@ -91,11 +91,10 @@ function PostTakeOffAdvisory:RemindFlapsStillDown()
 end
 
 function PostTakeOffAdvisory:Tick()
-
-	local gear_indicator_1 = GetJester().awareness:GetObservation("left_gear_indicator") or false
-	local gear_indicator_2 = GetJester().awareness:GetObservation("right_gear_indicator") or false
-	local gear_indicator_3 = GetJester().awareness:GetObservation("nose_gear_indicator") or false
-	local flaps_indicator = GetJester().awareness:GetObservation("flaps_indicator") or false
+	local gear_indicator_1 = GetJester().awareness:GetObservation("left_gear_indicator") or 0.0
+	local gear_indicator_2 = GetJester().awareness:GetObservation("right_gear_indicator") or 0.0
+	local gear_indicator_3 = GetJester().awareness:GetObservation("nose_gear_indicator") or 0.0
+	local flaps_indicator = GetJester().awareness:GetObservation("flaps_indicator") or u(0.0)
 
 	--Gear moving
 	if gear_indicator_1 < gear_moving_threshold and gear_indicator_2 < gear_moving_threshold and gear_indicator_3 < gear_moving_threshold then

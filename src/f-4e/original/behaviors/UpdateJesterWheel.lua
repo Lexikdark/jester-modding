@@ -269,13 +269,12 @@ local GenerateNavToAssetsItems = function(action_name, value_prefix, not_exit_me
 	return items
 end
 
-local GenerateNavToMapMarkerItems = function(action_name, value_prefix, not_exit_menu)
+local GenerateNavToMapMarkerItemsFor = function(markers, action_name, value_prefix, not_exit_menu)
 	value_prefix = value_prefix and value_prefix .. ";" or ""
 	not_exit_menu = not_exit_menu or false
 	local items = {}
 	local i = 1
-	local map_markers = map_markers or {}
-	for _, marker in ipairs(map_markers) do
+	for _, marker in ipairs(markers or {}) do
 		if i > Wheel.MAX_OUTER_MENU_ITEMS then
 			break
 		end
@@ -327,6 +326,25 @@ local GenerateNavToMapMarkerItems = function(action_name, value_prefix, not_exit
 	return items
 end
 
+local GenerateNavToMapMarkerItems = function(action_name, value_prefix, not_exit_menu)
+	return {
+		Wheel.Item:new({
+			name = "Own Markers",
+			outer_menu = Wheel.Menu:new({
+				name = "Own Markers",
+				items = GenerateNavToMapMarkerItemsFor(own_map_markers, action_name, value_prefix, not_exit_menu),
+			}),
+		}),
+		Wheel.Item:new({
+			name = "All Markers",
+			outer_menu = Wheel.Menu:new({
+				name = "All Markers",
+				items = GenerateNavToMapMarkerItemsFor(all_map_markers, action_name, value_prefix, not_exit_menu),
+			}),
+		})
+	}
+end
+
 local UpdateDivertTGT1ToAirfields = function()
 	local items = GenerateNavToAirfieldsItems( "divert_tgt1_lat_lon" )
 	local wrapping_item = Wheel.Item:new({
@@ -355,7 +373,7 @@ local UpdateDivertTGT1ToMapMarkers = function()
 	local items = GenerateNavToMapMarkerItems( "divert_tgt1_lat_lon" )
 	local wrapping_item = Wheel.Item:new({
 		name = "Map Markers",
-		outer_menu = Wheel.Menu:new({
+		menu = Wheel.Menu:new({
 			name = "Map Markers",
 			items = items,
 		}),
@@ -744,7 +762,7 @@ function UpdateJesterWheel:UpdateFlightplans()
 				})
 			add_items[3] = Wheel.Item:new({
 				name = "Map Markers",
-				outer_menu = Wheel.Menu:new({
+				menu = Wheel.Menu:new({
 					name = "Add WPT from Map Markers",
 					items = add_after_items_map_marker,
 				}),
@@ -820,7 +838,7 @@ function UpdateJesterWheel:UpdateFlightplans()
 								}),
 								Wheel.Item:new({
 									name = "Map Markers  ",
-									outer_menu = Wheel.Menu:new({
+									menu = Wheel.Menu:new({
 										name = "Change WPT from Map Marker  ",
 										items = edit_wpt_map_marker,
 									}),
@@ -936,7 +954,7 @@ function UpdateJesterWheel:UpdateFlightplans()
 								}),
 								Wheel.Item:new({
 									name = "Map Markers ",
-									outer_menu = Wheel.Menu:new({
+									menu = Wheel.Menu:new({
 										name = "Add WPT from Map Marker ",
 										items = insert_wpt_map_marker,
 									}),

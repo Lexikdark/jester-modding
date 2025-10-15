@@ -11,6 +11,10 @@ local action_yes = function(task)
 	GetJester().memory:SetReadyForInsAlignment(true)
 end
 
+local action_yes_silent = function(task)
+	GetJester().memory:SetReadyForInsAlignment(true)
+end
+
 local action_no = function(task)
 	GetJester():AddTask(Task:new():Roger())
 	GetJester().memory:SetReadyForInsAlignment(false)
@@ -62,6 +66,7 @@ function SayReadyForInsAlignment:Constructor()
 		Dialog.Push(question)
 
 		ListenTo("yes", "SayReadyForInsAlignment", action_yes)
+		ListenTo("yes_silent", "SayReadyForInsAlignment", action_yes_silent)
 		ListenTo("no", "SayReadyForInsAlignment", action_no)
 		ListenTo("let_you_know", "SayReadyForInsAlignment", action_let_you_know)
 		ListenTo("expired", "SayReadyForInsAlignment", action_expired)

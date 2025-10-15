@@ -30,6 +30,29 @@ local radio_freq_decimal = {
     ["75"] = "SEVENTY_FIVE",
 }
 
+local radio_freq_decimal_msfs = {
+    ["00"] = "ZERO",
+    ["05"] = "ZERO_FIVE",
+    ["10"] = "ONE_ZERO",
+    ["15"] = "ONE_FIVE",
+    ["20"] = "TWO_ZERO",
+    ["25"] = "TWO_FIVE",
+    ["30"] = "THREE_ZERO",
+    ["35"] = "THREE_FIVE",
+    ["40"] = "FOUR_ZERO",
+    ["45"] = "FOUR_FIVE",
+    ["50"] = "FIVE_ZERO",
+    ["55"] = "FIVE_FIVE",
+    ["60"] = "SIX_ZERO",
+    ["65"] = "SIX_FIVE",
+    ["70"] = "SEVEN_ZERO",
+    ["75"] = "SEVEN_FIVE",
+    ["80"] = "EIGHT_ZERO",
+    ["85"] = "EIGHT_FIVE",
+    ["90"] = "NINE_ZERO",
+    ["95"] = "NINE_FIVE",
+}
+
 local ToggleCommand = function(task)
     return task:ClickShort("Comm Command", "ON")
 end
@@ -45,6 +68,16 @@ local function round_decimal_ones(value)
     else
         return "75"
     end
+end
+
+local function round_decimal_ones_msfs(value)
+    local n = tonumber(value) or 0
+    -- clamp to 0..99.999 so we don't spill to 100
+    if n < 0 then n = 0 elseif n > 99.999 then n = 99.999 end
+    -- round to nearest 5 (0,5,10,...,95); midpoint (.5) rounds up
+    local r = math.floor((n + 2.5) / 5) * 5
+    if r >= 100 then r = 95 end
+    return string.format("%02d", r)
 end
 
 local UpdateRadioWheelInfo = function()
@@ -70,6 +103,23 @@ local SetUhfFrequency = function(task, frequency_text)
                :Click("Radio Freq xxx.x11", radio_freq_decimal[decimalsOnes], s(0.2), true)
 end
 
+local SetUhfFrequencyMSFS = function(task, frequency_text)
+    -- e.g. 227875 (kHz)
+    local hundreds = frequency_text:sub(1, 1) -- 2
+    local tens = frequency_text:sub(2, 2) -- 2
+    local ones = frequency_text:sub(3, 3) -- 7
+    local decimalsHundreds = frequency_text:sub(4, 4) -- 8
+    local decimalsOnes = frequency_text:sub(5, 6) -- 75
+    decimalsOnes = round_decimal_ones_msfs(decimalsOnes)
+    local decEnum = radio_freq_decimal_msfs[decimalsOnes] or "ZERO"
+
+    return task:Click("Radio Freq 1xx.xxx", radio_freq_hundreds[hundreds], s(0.2), true)
+               :Click("Radio Freq x1x.xxx", tens, s(0.2), true)
+               :Click("Radio Freq xx1.xxx", ones, s(0.2), true)
+               :Click("Radio Freq xxx.1xx", decimalsHundreds, s(0.2), true)
+               :Click("Radio Freq xxx.x11", decEnum, s(0.2), true)
+end
+
 local TuneManualFrequency = function(task, frequency_text)
     local frequency_num = tonumber(frequency_text)
 
@@ -84,6 +134,27 @@ local TuneManualFrequency = function(task, frequency_text)
     -- So we first put it into a safe frequency that can reach anything if set like that.
     SetUhfFrequency(task, "255550")
     SetUhfFrequency(task, frequency_text)
+            :Click("Radio Freq Mode", radio_freq_mode.manual)
+            :Click("Radio Mode", radio_mode.trg_adf)
+            :Then(function() UpdateRadioWheelInfo() end)
+end
+
+local TuneManualFrequencyMSFS = function(task, frequency_text)
+    local frequency_num = tonumber(frequency_text)
+    frequency_num = frequency_num + 200000 --Frequency shift
+    if frequency_num < 225000 or frequency_num > 399975 then
+        task:CantDo()
+        return
+    end
+
+    local shifted_text = string.format("%06d", frequency_num)
+
+    task:Roger()
+    -- Knobs block for invalid frequencies, which can happen while setting from left to right.
+    -- (e.g. 227000 can not be entered if currently at 250000, as an intermediate value would be 220000)
+    -- So we first put it into a safe frequency that can reach anything if set like that.
+    SetUhfFrequencyMSFS(task, "255550")
+    SetUhfFrequencyMSFS(task, shifted_text)
             :Click("Radio Freq Mode", radio_freq_mode.manual)
             :Click("Radio Mode", radio_mode.trg_adf)
             :Then(function() UpdateRadioWheelInfo() end)
@@ -130,4 +201,8 @@ end)
 
 ListenTo("radio_tune_atc", "UhfRadioMenu", function(task, freq)
     TuneManualFrequency(task, freq)
+end)
+
+ListenTo("msfs_radio_tune_atc", "UhfRadioMenu", function(task, freq)
+    TuneManualFrequencyMSFS(task, freq)
 end)

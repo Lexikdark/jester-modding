@@ -26,10 +26,10 @@ local AlignmentRestart = require 'situations.AlignmentReset'
 local EngineMasterSwitchesOn = require 'situations.EngineMasterSwitchesOn'
 local DoAlways = require 'situations.DoAlways'
 
-F_4E_WSO_Jester = Class(Jester)
+F_4E_MSFS_WSO_Jester = Class(Jester)
 
 function CreateF4EMSFSWSOJester ( )
-    local wso = F_4E_WSO_Jester:new()
+    local wso = F_4E_MSFS_WSO_Jester:new()
     local Task = require 'base.Task'
     local Action = require 'base.Action'
     local DelayAction = require 'actions.DelayAction'
@@ -53,15 +53,15 @@ function CreateF4EMSFSWSOJester ( )
     wso:AddSituations(InAircraft:new())
     wso:AddSituations(Landing:new())
     wso:AddSituations(TakeOff:new())
---     wso:AddSituations(Taxiing:new())
---     wso:AddSituations(StartUp:new())
---     wso:AddSituations(CloseCanopy:new())
---     wso:AddSituations(GroundPowerConnected:new())
---     wso:AddSituations(AircraftCold:new())
---     wso:AddSituations(PowerOnAndOnGround:new())
---     wso:AddSituations(PostTakeoff:new())
---     wso:AddSituations(AlignmentRestart:new())
---     wso:AddSituations(EngineMasterSwitchesOn:new())
+    wso:AddSituations(Taxiing:new())
+    wso:AddSituations(StartUp:new())
+    wso:AddSituations(CloseCanopy:new())
+    wso:AddSituations(GroundPowerConnected:new())
+    wso:AddSituations(AircraftCold:new())
+    wso:AddSituations(PowerOnAndOnGround:new())
+    wso:AddSituations(PostTakeoff:new())
+    wso:AddSituations(AlignmentRestart:new())
+    wso:AddSituations(EngineMasterSwitchesOn:new())
     wso:AddSituations(DoAlways:new())
     --wso:AddSituation(OnFinal:new())
 
@@ -69,21 +69,6 @@ function CreateF4EMSFSWSOJester ( )
     for _, callback in pairs(mod_init) do
         callback(wso)
     end
-
-    --
-    -- Uncomment lines below to test the new switch actions
-    --
-    --local SwitchAction = require 'actions.SwitchAction'
-    --local SwitchTemporarilyAction = require 'actions.SwitchTemporarilyAction'
-    --local Timer = require 'base.Timer'
-    --
-    --local test_radar_switch_task = Task:new()
-    --test_radar_switch_task:AddOnActivationCallback(function(self) self:AddAction(SwitchAction("Radar Power", "OPER")) end)
-    --Timer:new(s(7), function() GetJester():AddTask(test_radar_switch_task) end)
-    --
-    --local test_rwr_task = Task:new()
-    --test_rwr_task:AddOnActivationCallback(function(self) self:AddAction(SwitchTemporarilyAction("RWR BIT Button", "ON", s(1.5))) end) -- s(1.5) is optional but required for BIT as the button needs to be held for 1s+
-    --Timer:new(s(12), function() GetJester():AddTask(test_rwr_task) end)
 
     return wso
 end

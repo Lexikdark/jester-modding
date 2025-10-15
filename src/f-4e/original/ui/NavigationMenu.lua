@@ -2,6 +2,7 @@
 
 local Interactions = require('base.Interactions')
 local Navigate = require ('behaviors.NFO.navigation.Navigate')
+local MSFSNavigate = require ('behaviors.NFO.navigation.MSFSNavigate')
 local NavInteractions = require('tasks.navigation.NavInteractions')
 local UpdateJesterWheel = require('behaviors.UpdateJesterWheel')
 local Waypoint = require 'base.Waypoint'
@@ -154,6 +155,15 @@ ListenTo("nav_tacan_chan_ones", "NavigationMenu", function(task, channel)
 	Wheel.ReplaceItem(wrapping_item, "Select Channel", { "Navigation", "TACAN" })
 	Wheel.SetMenuInfo("Band [" ..channel.. "X]", { "Navigation", "TACAN", "Select Channel" })
 end)
+
+ListenTo("nav_tacan_chan", "NavigationMenu", function(task, channelWithBand)
+	task:Roger()
+	SetTacanChannel(task, channelWithBand)
+	task:Then(function()
+		UpdateTACANWheelInfo()
+	end)
+end)
+
 
 ListenTo("nav_tacan_chan_band", "NavigationMenu", function(task, channelWithBand)
 	task:Roger()
@@ -1042,6 +1052,45 @@ ListenTo("designate_wpt", "NavigationMenu", function(task, fltpln_wpt_type)
 		memory:SetWaypointDesignation(fltpln_no, wpt_no, type)
 		UpdateFlightPlans()
 		Wheel.NavigateTo({ "Navigation", "Edit Flight Plan", memory:GetFlightplanNameString(fltpln_no) })
+	else
+		task:CantDo()
+	end
+end)
+
+ListenTo("msfsnav_holding", "NavigationMenu", function(task)
+	local navigate_behaviour = GetJester().behaviors[MSFSNavigate]
+	local holding_set = false
+	if navigate_behaviour ~= nil then
+		holding_set = navigate_behaviour:SetHoldAtNextWpt( )
+	end
+	if holding_set then
+		task:Roger()
+	else
+		task:CantDo()
+	end
+end)
+
+ListenTo("msfsnav_resume", "NavigationMenu", function(task)
+	local navigate_behaviour = GetJester().behaviors[MSFSNavigate]
+	local ok = false
+	if navigate_behaviour ~= nil then
+		ok = navigate_behaviour:ResumeNav( )
+	end
+	if ok then
+		task:Roger()
+	else
+		task:CantDo()
+	end
+end)
+
+ListenTo("msfsnav_navfix", "NavigationMenu", function(task)
+	local navigate_behaviour = GetJester().behaviors[MSFSNavigate]
+	local nav_fix_set = false
+	if navigate_behaviour ~= nil then
+		nav_fix_set = navigate_behaviour:SetWptAsNavFix()
+	end
+	if nav_fix_set then
+		task:Roger()
 	else
 		task:CantDo()
 	end

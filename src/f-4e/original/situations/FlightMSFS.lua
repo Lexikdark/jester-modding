@@ -4,7 +4,7 @@ local Task = require 'base.Task'
 local Airborne = require 'conditions.Airborne'
 local ObserveFuel = require 'behaviors.ObserveFuel'
 local ObserveCockpitPressureIndicator = require 'behaviors.NFO.ObserveCockpitPressureIndicator'
-local Navigate = require 'behaviors.NFO.navigation.Navigate'
+local MSFSNavigate = require 'behaviors.NFO.navigation.MSFSNavigate'
 local OperatePaveSpike = require 'behaviors.OperatePaveSpike'
 local OperateRadar = require 'radar.OperateRadar'
 local MoveRadarCursor = require 'radar.MoveRadarCursor'
@@ -24,7 +24,7 @@ FlightMSFS:AddDeactivationConditions(Airborne.False:new())
 function FlightMSFS:OnActivation()
 	self:AddBehavior(ObserveFuel)
 	self:AddBehavior(ObserveCockpitPressureIndicator)
-	self:AddBehavior(Navigate)
+	self:AddBehavior(MSFSNavigate)
 -- 	self:AddBehavior(OperatePaveSpike)
 -- 	self:AddBehavior(OperateRadar)
 -- 	self:AddBehavior(MoveRadarCursor)
@@ -45,7 +45,7 @@ end
 function FlightMSFS:OnDeactivation()
 	self:RemoveBehavior(ObserveFuel)
 	self:RemoveBehavior(ObserveCockpitPressureIndicator)
-	self:RemoveBehavior(Navigate)
+	self:RemoveBehavior(MSFSNavigate)
 -- 	self:RemoveBehavior(OperatePaveSpike)
 -- 	self:RemoveBehavior(OperateRadar)
 -- 	self:RemoveBehavior(MoveRadarCursor)

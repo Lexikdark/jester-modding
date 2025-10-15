@@ -1,6 +1,7 @@
 ---// Copyright (c) 2023 Heatblur Simulations. All rights reserved.
 ---
 local Class = require('base.Class')
+local SayTask = require('tasks.common.SayTask')
 local Task = require('base.Task')
 local Interactions = require('base.Interactions')
 local NavInteractions = require('tasks.navigation.NavInteractions')
@@ -18,8 +19,8 @@ local function NavigateToTanker(tanker_no)
 	end
 
 	local i = 0
-	for _, obj in ipairs(nav_tac_objects) do
-		if obj.is_tanker then
+	for _, obj in ipairs(nav_tac_objects or {}) do
+		if obj and obj.is_tanker then
 			i = i + 1
 			if i == tanker_no then
 				local lat = obj.latitude.value
@@ -44,18 +45,20 @@ local function NavigateToAirport(airport_no)
 	end
 
 	local i = 0
-	for _, obj in ipairs(nearby_airfields) do
-		i = i + 1
-		if i == airport_no then
-			local lat = obj.latitude.value
-			local lon = obj.longitude.value
+	for _, obj in ipairs(nearby_airfields or {}) do
+		if obj then
+			i = i + 1
+			if i == airport_no then
+				local lat = obj.latitude.value
+				local lon = obj.longitude.value
 
-			if lat ~= nil and lon ~= nil then
-				local act_val = tostring(lat) .. ";" .. tostring(lon)
-				local task = Task:new()
-				NavInteractions.DivertWithTGT1(task, act_val)
-				GetJester():AddTask(task)
-				return
+				if lat ~= nil and lon ~= nil then
+					local act_val = tostring(lat) .. ";" .. tostring(lon)
+					local task = Task:new()
+					NavInteractions.DivertWithTGT1(task, act_val)
+					GetJester():AddTask(task)
+					return
+				end
 			end
 		end
 	end
@@ -73,7 +76,7 @@ function CheckFuelDialog:Constructor()
 			local items = {}
 			local i = 1
 			local max_tankers_no = 4
-			for _, obj in ipairs(nav_tac_objects) do
+			for _, obj in ipairs(nav_tac_objects or {}) do
 				if i > max_tankers_no then
 					break
 				end
@@ -113,7 +116,7 @@ function CheckFuelDialog:Constructor()
 			local items = {}
 			local i = 1
 			local max_airfields_no = 4
-			for _, obj in ipairs(nearby_airfields) do
+			for _, obj in ipairs(nearby_airfields or {}) do
 				if i > max_airfields_no then
 					break
 				end
@@ -252,6 +255,10 @@ end)
 
 ListenTo("divert_airfield_4", "CheckFuelDialog", function()
 	NavigateToAirport(4)
+end)
+
+ListenTo("msfs_fuel_check", "CheckFuelDialog", function()
+	GetJester():AddTask(SayTask:new('phrases/Fuel_FuelCheck'))
 end)
 
 CheckFuelDialog:Seal()

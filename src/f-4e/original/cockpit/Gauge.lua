@@ -40,7 +40,8 @@ function Gauge:CanObserve()
 			return eyeballs:IsPointVisible(self.connector:GetPositionBody())
 		end
 	end
-	return false
+-- Log("Connector " .. tostring(self.connector) .. " is invalid")
+return true
 end
 
 Gauge:Seal()

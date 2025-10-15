@@ -350,17 +350,19 @@ function Awareness:GetClosestFriendlyTanker()
 end
 
 function Awareness:GetDistanceToClosestAirfield()
-	if #nearby_airfields > 0 then
-		local nearest_airfield = nearby_airfields[1]
+	local airfields = nearby_airfields or {}
+	if #airfields > 0 then
+		local nearest_airfield = airfields[1]
 		return nearest_airfield.position:ConvertToPolar().length:ConvertTo(NM)
 	end
 	return NM(1000) --Its just super far away.
 end
 
 function Awareness:GetDistanceToClosestFriendlyAirfield()
-	if #nearby_airfields > 0 then
-		for _, airfield in ipairs(nearby_airfields) do
-			if airfield.friendly then
+	local list = nearby_airfields or {}
+	if #list > 0 then
+		for _, airfield in ipairs(list) do
+			if not airfield.friendly then
 				return airfield.position:ConvertToPolar().length:ConvertTo(NM)
 			end
 		end
@@ -369,8 +371,9 @@ function Awareness:GetDistanceToClosestFriendlyAirfield()
 end
 
 function Awareness:GetDistanceToClosestFriendlyOrNeutralAirfield()
-	if #nearby_airfields > 0 then
-		for _, airfield in ipairs(nearby_airfields) do
+	local list = nearby_airfields or {}
+	if #list > 0 then
+		for _, airfield in ipairs(list) do
 			if not airfield.hostile then
 				return airfield.position:ConvertToPolar().length:ConvertTo(NM)
 			end

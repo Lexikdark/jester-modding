@@ -32,25 +32,48 @@ function CountermeasuresInteractions.FlaresJettison(task)
                :Click("Ripple Switch", "OFF", s(10), true)
 end
 
+function CountermeasuresInteractions.GetPhraseForQuantity(quantity)
+    local hundreds = quantity % 1000 - quantity % 100
+    local tens = quantity % 100 - quantity % 10
+    local ones = quantity % 10
+
+    local phrase_hundreds =   'Numbers/' .. Utilities.NumberToText(hundreds)
+    local phrase_tens =       'Numbers/' .. Utilities.NumberToText(tens, true) -- true for misspellForty
+    local phrase_ones =       'Numbers/' .. Utilities.NumberToText(ones)
+
+    if phrase_hundreds == 'Numbers/onehundred' then
+        phrase_hundreds = 'Numbers/hundred'
+    end
+
+    if quantity > 100 and quantity < 120 then
+        phrase_tens = ''
+        phrase_ones = 'Numbers/' .. Utilities.NumberToText(quantity - hundreds)
+    end
+
+    if quantity < 100 then
+        phrase_hundreds = ''
+    end
+
+    if quantity < 20 then
+        phrase_tens = ''
+        phrase_ones = 'Numbers/' .. Utilities.NumberToText(quantity)
+    end
+
+    local phrase_empty = ''
+    if quantity == 0 then
+        phrase_empty = 'misc/negative'
+        phrase_ones = ''
+    end
+
+    return phrase_empty, phrase_hundreds, phrase_tens, phrase_ones
+end
+
 function CountermeasuresInteractions.CheckQuantity(task)
     local chaff_quantity = GetJester().awareness:GetObservation("chaff_counter")
     local flare_quantity = GetJester().awareness:GetObservation("flare_counter")
 
-    local chaff_phrase_empty = ''
-    if chaff_quantity == 0 then
-        chaff_phrase_empty = 'misc/negative'
-    end
-    local chaff_phrase_hundreds =   'Numbers/' .. Utilities.NumberToText(chaff_quantity % 1000 - chaff_quantity % 100)
-    local chaff_phrase_tens =       'Numbers/' .. Utilities.NumberToText(chaff_quantity % 100 - chaff_quantity % 10)
-    local chaff_phrase_ones =       'Numbers/' .. Utilities.NumberToText(chaff_quantity % 10)
-
-    local flare_phrase_empty = ''
-    if flare_quantity == 0 then
-        flare_phrase_empty = 'misc/negative'
-    end
-    local flare_phrase_hundreds =   'Numbers/' .. Utilities.NumberToText(flare_quantity % 1000 - flare_quantity % 100)
-    local flare_phrase_tens =       'Numbers/' .. Utilities.NumberToText(flare_quantity % 100 - flare_quantity % 10)
-    local flare_phrase_ones =       'Numbers/' .. Utilities.NumberToText(flare_quantity % 10)
+    chaff_phrase_empty, chaff_phrase_hundreds, chaff_phrase_tens, chaff_phrase_ones = CountermeasuresInteractions.GetPhraseForQuantity(chaff_quantity)
+    flare_phrase_empty, flare_phrase_hundreds, flare_phrase_tens, flare_phrase_ones = CountermeasuresInteractions.GetPhraseForQuantity(flare_quantity)
 
 --     Log('CMS, chaff: ' .. tostring(chaff_quantity))
 --     Log('CMS, flare: ' .. tostring(flare_quantity))
