@@ -42,7 +42,7 @@ function TakeOffAdvisory:Tick()
 	--Key things from Kirk:
 	--Report off the peg when airspeed is moving.
 	--Report 80 knots. And report 100 knots. So pilot knows more or less. That's it.
-	if airspeed < kt(90) + speed_margin and airspeed > kt(90) - speed_margin then
+	if airspeed < kt(85) + speed_margin and airspeed > kt(85) - speed_margin then
 		if not self.eighty_was_reported then
 			Log("80 knots!")
 			local task = SayTask:new('checklists/eightyknots')
@@ -51,7 +51,7 @@ function TakeOffAdvisory:Tick()
 		end
 	end
 
-	if airspeed < kt(110) + speed_margin and airspeed > kt(110) - speed_margin then
+	if airspeed < kt(105) + speed_margin and airspeed > kt(105) - speed_margin then
 		if not self.hundred_kts_was_reported then
 			local task = SayTask:new('checklists/100kts')
 			GetJester():AddTask(task)
@@ -66,7 +66,7 @@ function TakeOffAdvisory:Tick()
 
 	local rpm_gauge_left = GetJester().awareness:GetObservation("rpm_left_engine")
 	local rpm_gauge_right = GetJester().awareness:GetObservation("rpm_right_engine")
-	if airspeed > kt(15) and rpm_gauge_left > percent(95) and rpm_gauge_right > percent(95) then
+	if airspeed > kt(50) and rpm_gauge_left > percent(95) and rpm_gauge_right > percent(95) then
 		if not self.off_the_peg_was_reported then
 			local task = SayTask:new('checklists/engineairspeedoffpeg')
 			GetJester():AddTask(task)

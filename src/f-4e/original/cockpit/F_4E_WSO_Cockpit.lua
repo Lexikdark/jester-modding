@@ -42,16 +42,16 @@ function F_4E_WSO_Cockpit:AddGauges()
 			})
 	self:AddGauge("Pilot Canopy",
 			{
-				observation_name = 'pilot_canopy_sealed',
+				observation_name = 'pilot_canopy_open',
 				connector = Connector:new('PNT_PILOT_CANOPY_HANDLE'),
-				property = GetProperty('/Canopies/Pilot Canopy', 'Sealed'),
+				property = GetProperty('/Canopies/Pilot Canopy', 'Canopy Control Handle Position'),
 				time_to_read = default_simple_gauge_time_to_read
 			})
 	self:AddGauge("WSO Canopy",
 			{
-				observation_name = 'wso_canopy_sealed',
+				observation_name = 'wso_canopy_open',
 				connector = Connector:new('PNT_PILOT_CANOPY_HANDLE'),
-				property = GetProperty('/Canopies/Copilot Canopy', 'Sealed'),
+				property = GetProperty('/Canopies/Copilot Canopy', 'Canopy Control Handle Position'),
 				time_to_read = default_simple_gauge_time_to_read
 			})
 	-- Hacky way to detect that the ins is aligned

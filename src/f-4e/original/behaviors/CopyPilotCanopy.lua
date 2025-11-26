@@ -6,55 +6,46 @@ local StressReaction = require('base.StressReaction')
 local Urge = require('base.Urge')
 local Task = require('base.Task')
 
-local ControllingCanopy = Class(Behavior)
-local default_interval = s(4)
+local CopyPilotCanopy = Class(Behavior)
 
-function ControllingCanopy:Constructor()
+function CopyPilotCanopy:Constructor()
 	Behavior.Constructor(self)
-
-	local controllingCanopy = function()
-
-		local is_pilot_sealed = GetJester().awareness:GetObservation("pilot_canopy_sealed")
-		local is_wso_sealed = GetJester().awareness:GetObservation("wso_canopy_sealed")
+	local routine = function()
+		--Log("Checking Canopy")
+		local is_pilot_open = GetJester().awareness:GetObservation("pilot_canopy_open")
+		local is_wso_open = GetJester().awareness:GetObservation("wso_canopy_open")
 		local has_said_canopy = GetJester().memory:GetSaidCanopy()
 
-		if is_pilot_sealed and not is_wso_sealed then
-
+		if not is_pilot_open and is_wso_open then
+			--Log("Closing canopy")
 			local task = Task:new():Click("WSO Canopy Handle", "OFF")
-			task:Wait(s(8))
-			    :Require({ hands = true, voice = true })
 
 			if not has_said_canopy then
-				task:Say('phrases/CanopyDownLightsOutAndStripesAligned')
+				task:Wait(s(8))
+						:Require({ hands = true, voice = true })
+						:Say('phrases/CanopyDownLightsOutAndStripesAligned')
 				GetJester().memory:SetSaidCanopy(true)
 			end
 
 			GetJester():AddTask(task)
-
-		elseif not is_pilot_sealed then
+		elseif is_pilot_open and not is_wso_open then
+			--Log("Opening canopy")
 			local task = Task:new():Click("WSO Canopy Handle", "ON")
 			GetJester():AddTask(task)
-
 		end
-
-
 	end
 
 	self.check_urge = Urge:new({
-		time_to_release = default_interval,
-		on_release_function = controllingCanopy,
+		time_to_release = s(4),
+		on_release_function = routine,
 		stress_reaction = StressReaction.ignorance,
 	})
 	self.check_urge:Restart()
-
 end
 
-function ControllingCanopy:Tick()
-	-- check urge
+function CopyPilotCanopy:Tick()
 	self.check_urge:Tick()
-
-
 end
 
-ControllingCanopy:Seal()
-return ControllingCanopy
+CopyPilotCanopy:Seal()
+return CopyPilotCanopy

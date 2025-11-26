@@ -175,7 +175,9 @@ end
 
 function Api.IsTargetHigherPriorityThan(target, other_target)
 	-- TODO Perhaps also factor in closure rate
-	return target.scan_range < other_target.scan_range
+	    local r1 = target.scan_range:ConvertTo(NM).value
+        local r2 = other_target.scan_range:ConvertTo(NM).value
+        return r1 < r2
 end
 
 function Api.AreTargetsClose(first, second)

@@ -17,7 +17,7 @@ local Landing = require 'situations.Landing'
 local TakeOff = require 'situations.TakeOff'
 local Taxiing = require 'situations.Taxiing'
 local StartUp = require 'situations.StartUp'
-local CloseCanopy = require 'situations.CloseCanopy'
+local GroundOperations = require 'situations.GroundOperations'
 local GroundPowerConnected = require 'situations.GroundPowerConnected'
 local AircraftCold = require 'situations.AircraftCold'
 local PowerOnAndOnGround = require 'situations.PowerOnAndOnGround'
@@ -55,7 +55,7 @@ function CreateF4EMSFSWSOJester ( )
     wso:AddSituations(TakeOff:new())
     wso:AddSituations(Taxiing:new())
     wso:AddSituations(StartUp:new())
-    wso:AddSituations(CloseCanopy:new())
+    wso:AddSituations(GroundOperations:new())
     wso:AddSituations(GroundPowerConnected:new())
     wso:AddSituations(AircraftCold:new())
     wso:AddSituations(PowerOnAndOnGround:new())
