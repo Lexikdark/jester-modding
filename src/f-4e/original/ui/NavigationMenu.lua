@@ -261,7 +261,7 @@ end)
 ListenTo("resume_next_wpt", "NavigationMenu", function( task )
 	local memory = GetJester().memory
 	local previous_waypoint_no = memory:GetActiveWaypointNumber()
-	local next_wpt_flag = memory:SwitchToNextTurnPoint()
+	local next_wpt_flag = memory:SwitchToNextOrFirstTurnPoint()
 
 	if next_wpt_flag and memory:GetActiveWaypoint() ~= nil then
 		task:Roger()

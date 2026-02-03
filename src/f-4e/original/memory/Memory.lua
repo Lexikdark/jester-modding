@@ -545,6 +545,34 @@ function Memory:SwitchToNextTurnPoint()
 	end
 end
 
+function Memory:SwitchToNextOrFirstTurnPoint()
+	local flightplan = self:GetActiveFlightPlan()
+	if not flightplan or not flightplan.waypoints then
+		return false -- No active flight plan or no waypoints table
+	end
+
+	local waypoint_count = #flightplan.waypoints
+	local current_waypoint = flightplan.active_waypoint or 0
+
+	if current_waypoint > 0 and current_waypoint < waypoint_count then
+		-- Normal "next waypoint"
+		if flightplan.waypoints[current_waypoint] ~= nil then
+			flightplan.waypoints[current_waypoint].hold = false
+		end
+		flightplan.active_waypoint = current_waypoint + 1
+		return true
+	elseif current_waypoint > 0 and current_waypoint == waypoint_count and waypoint_count > 0 then
+		-- We are at the last waypoint: wrap around to the first
+		if flightplan.waypoints[current_waypoint] ~= nil then
+			flightplan.waypoints[current_waypoint].hold = false
+		end
+		flightplan.active_waypoint = 1
+		return true
+	end
+
+	return false -- Invalid active waypoint or empty flightplan
+end
+
 function Memory:SwitchToNextCAPWaypoint()
 	local flightplan = self:GetActiveFlightPlan()
 	if not flightplan then

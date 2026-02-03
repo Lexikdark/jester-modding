@@ -25,15 +25,7 @@ function EngineMasterSwitchesOn:OnActivation()
 	local ins_aligned = GetJester().awareness:GetObservation("ins_alignment_state")
 	local alignment_type_chosen = GetJester().memory:GetAlignmentTypeChosen()
 
-	if not alignment_type_chosen
-	and ins_aligned < 3 then
-
-		local task = Task:new():Wait( s(2), { voice = true }):NextTask(StartINSTask:new())
-		GetJester():AddTask(task)
-
-	end
-
-	end
+end
 
 
 function EngineMasterSwitchesOn:OnDeactivation()
