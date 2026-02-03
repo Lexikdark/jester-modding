@@ -1,0 +1,70 @@
+.title {
+    text-align: center;
+    color: black;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 35px;
+}
+
+h2 {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.tile {
+    float: left;
+    width: 200px;
+    height: 200px;
+
+    -webkit-filter: brightness(80%);
+}
+
+.tile::before {
+    background-color: rgba(0, 0, 0, 0.2);
+    display: block;
+    content: '';
+    position: absolute;
+    height: inherit;
+    width: inherit;
+}
+
+.tile:hover {
+    -webkit-filter: brightness(100%);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.tile:hover::before {
+    background-color: rgba(0, 0, 0, 0);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.empty {
+    -webkit-filter: brightness(100%);
+}
+
+.empty::before {
+    background-color: transparent;
+}
+
+.next_row {
+    clear: both;
+}
+
+.google {
+    background: url('../img/google.png');
+    background-size: cover;
+}
+
+.heatblur {
+    background: url('../img/heatblur.png');
+    background-size: cover;
+}
